@@ -16,6 +16,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+//import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
     EditText edtEmail, edtUsername, edtPassword;
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         email = edtEmail.getText().toString();
         password = edtPassword.getText().toString();
 
+
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -76,6 +79,9 @@ public class MainActivity extends AppCompatActivity {
                     //FirebaseUser user = mAuth.getCurrentUser();
                     Toast.makeText(MainActivity.this, "Authentication Passed. Never Give Up ",
                             Toast.LENGTH_SHORT).show();
+                    FirebaseDatabase.getInstance().getReference().child("my_users")
+                            .child(task.getResult().getUser().getUid()).
+                            child("username").setValue(edtUsername.getText().toString());
                     transitionToSocialMediaActivity();
 
                 }

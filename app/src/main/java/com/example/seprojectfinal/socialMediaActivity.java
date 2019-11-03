@@ -3,19 +3,31 @@ package com.example.seprojectfinal;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.media.Image;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
 
 public class socialMediaActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
+    private ImageView postImageView;
+    private Button btnCreatePost;
+    private ListView usersListView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_social_media);
+        postImageView = findViewById(R.id.postImageView);
+        btnCreatePost = findViewById(R.id.btnCreatePost);
+        usersListView = findViewById(R.id.usersListView);
+
 
         mAuth = FirebaseAuth.getInstance();
     }
@@ -30,10 +42,23 @@ public class socialMediaActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (item.getItemId() == R.id.logoutItem) {
-            mAuth.signOut();
-            finish();
-
+            logOut();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        logOut();
+
+
+    }
+
+
+    private  void logOut() {
+        mAuth.signOut();
+        finish();
+
     }
 }
