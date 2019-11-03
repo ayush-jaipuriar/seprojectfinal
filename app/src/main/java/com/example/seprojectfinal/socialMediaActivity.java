@@ -28,8 +28,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -40,6 +42,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class socialMediaActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
@@ -53,7 +56,8 @@ public class socialMediaActivity extends AppCompatActivity implements AdapterVie
     private ArrayList<String> usernames;
     private ArrayAdapter adapter;
     private ArrayList<String> uids;
-
+    private String imageLink;
+    private String imageDownloadLink;
 
 
     @Override
@@ -100,6 +104,11 @@ public class socialMediaActivity extends AppCompatActivity implements AdapterVie
 
         if (item.getItemId() == R.id.logoutItem) {
             logOut();
+        }
+
+        if (item.getItemId() == R.id.viewPostsItem) {
+            Intent intent = new Intent(socialMediaActivity.this, ViewPostsActivity.class);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -197,6 +206,7 @@ public class socialMediaActivity extends AppCompatActivity implements AdapterVie
                         usernames.add(username);
                         adapter.notifyDataSetChanged();
 
+
                     };
 
                     @Override
@@ -220,6 +230,18 @@ public class socialMediaActivity extends AppCompatActivity implements AdapterVie
                     }
                 });
 
+                taskSnapshot.getMetadata().getReference().getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+
+                        if (task.isSuccessful()) {
+                            imageDownloadLink = task.getResult().toString();
+                        }
+
+
+                    }
+                });
+
 
             }
         });
@@ -231,5 +253,20 @@ public class socialMediaActivity extends AppCompatActivity implements AdapterVie
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+        HashMap<String,String> dataMap = new HashMap<>();
+        dataMap.put("fromWhom", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+        dataMap.put("imageIdentifier", imageIdentifier);
+        dataMap.put("imageLink", imageDownloadLink);
+        dataMap.put("des",edtDescription.getText().toString());
+        FirebaseDatabase.getInstance().getReference().child("my_users").child(uids.get(position)).child("received_posts").push().setValue(dataMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+
+                if (task.isSuccessful()) {
+                    Toast.makeText(socialMediaActivity.this, "Data successfully sent !", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
     }
 }
