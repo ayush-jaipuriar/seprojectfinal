@@ -20,7 +20,9 @@ import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -28,10 +30,15 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class socialMediaActivity extends AppCompatActivity {
@@ -41,6 +48,10 @@ public class socialMediaActivity extends AppCompatActivity {
     private ListView usersListView;
     private Bitmap bitmap;
     private  String imageIdentifier;
+    private EditText edtDescription;
+    private ArrayList<String> usernames;
+    private ArrayAdapter adapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +60,10 @@ public class socialMediaActivity extends AppCompatActivity {
         postImageView = findViewById(R.id.postImageView);
         btnCreatePost = findViewById(R.id.btnCreatePost);
         usersListView = findViewById(R.id.usersListView);
-
+        edtDescription = findViewById(R.id.edtDescription);
+        usernames = new ArrayList<>();
+        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, usernames);
+        usersListView.setAdapter(adapter);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -169,6 +183,39 @@ public class socialMediaActivity extends AppCompatActivity {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                 // ...
                 Toast.makeText(socialMediaActivity.this, "Uploading Process is successful", Toast.LENGTH_LONG).show();
+                edtDescription.setVisibility(View.VISIBLE);
+                FirebaseDatabase.getInstance().getReference().child("my_users").addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        String username = (String) dataSnapshot.child("username").getValue();
+                        usernames.add(username);
+                        adapter.notifyDataSetChanged();
+
+                    };
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
             }
         });
     }
