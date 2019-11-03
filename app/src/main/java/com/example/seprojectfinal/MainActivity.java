@@ -40,6 +40,13 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        btnSignIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signIn();
+            }
+        });
     }
 
     @Override
@@ -65,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
                     Log.i("TAG", "createUserWithEmail:success");
                     //FirebaseUser user = mAuth.getCurrentUser();
-                    Toast.makeText(MainActivity.this, "Authentication Passed. Never Give Up",
+                    Toast.makeText(MainActivity.this, "Authentication Passed. Never Give Up ",
                             Toast.LENGTH_SHORT).show();
 
                 }
@@ -80,5 +87,26 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+    }
+
+
+    private  void signIn () {
+        mAuth.signInWithEmailAndPassword(edtEmail.getText().toString(), edtPassword.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+
+                if (task.isSuccessful()) {
+                    Toast.makeText(MainActivity.this, "Sign In Successful. Never Give Up ",
+                            Toast.LENGTH_SHORT).show();
+
+
+                }
+                else {
+                    Toast.makeText(MainActivity.this, "Sign in Unsuccessful. Never Give Up ",
+                            Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
     }
 }
