@@ -3,6 +3,7 @@ package com.example.seprojectfinal;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser!=null) {
             //Transition to next activity
+            transitionToSocialMediaActivity();
 
         }}
 
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
                     //FirebaseUser user = mAuth.getCurrentUser();
                     Toast.makeText(MainActivity.this, "Authentication Passed. Never Give Up ",
                             Toast.LENGTH_SHORT).show();
+                    transitionToSocialMediaActivity();
 
                 }
                 else {
@@ -98,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     Toast.makeText(MainActivity.this, "Sign In Successful. Never Give Up ",
                             Toast.LENGTH_SHORT).show();
+                    transitionToSocialMediaActivity();
 
 
                 }
@@ -108,5 +112,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private  void transitionToSocialMediaActivity () {
+        Intent intent = new Intent(MainActivity.this,socialMediaActivity.class);
+        startActivity(intent);
     }
 }
