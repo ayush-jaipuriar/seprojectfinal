@@ -21,8 +21,8 @@
 
     <ImageView
         android:id="@+id/postImageView"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:srcCompat="@drawable/placeholder" />
 
     <Button
