@@ -17,12 +17,15 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 //import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
     EditText edtEmail, edtUsername, edtPassword;
     Button btnSignUP, btnSignIn;
     private FirebaseAuth mAuth;
+    private StorageReference mStorageRef;
 
 
     @Override
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         btnSignIn = findViewById(R.id.btnSignIn);
         btnSignUP = findViewById(R.id.btnSignUp);
         mAuth = FirebaseAuth.getInstance();
+        mStorageRef = FirebaseStorage.getInstance().getReference();
 
         btnSignUP.setOnClickListener(new View.OnClickListener() {
             @Override

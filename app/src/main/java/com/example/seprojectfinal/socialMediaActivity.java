@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
@@ -21,8 +23,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
+import java.util.UUID;
 
 public class socialMediaActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -30,7 +40,7 @@ public class socialMediaActivity extends AppCompatActivity {
     private Button btnCreatePost;
     private ListView usersListView;
     private Bitmap bitmap;
-
+    private  String imageIdentifier;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +64,7 @@ public class socialMediaActivity extends AppCompatActivity {
         btnCreatePost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                uploadImageToServer();
 
             }
         });
@@ -95,21 +106,21 @@ public class socialMediaActivity extends AppCompatActivity {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent,1000);
         }
-        else if (Build.VERSION.SDK_INT >= 23) {
+         else if (Build.VERSION.SDK_INT >= 23)
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) !=
             PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
-
-            } else {
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1000);
+            }
+             else {
                 Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent,100);
+                startActivityForResult(intent, 1000);
             }
 
         }
 
 
 
-    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -131,6 +142,37 @@ public class socialMediaActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void uploadImageToServer () {
+        // Get the data from an ImageView as bytes
+
+        if (bitmap!=null){
+        postImageView.setDrawingCacheEnabled(true);
+        postImageView.buildDrawingCache();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] data = baos.toByteArray();
+        imageIdentifier = UUID.randomUUID() + " .png";
+        UploadTask uploadTask = FirebaseStorage.getInstance().getReference()
+                .child("my_images").child(imageIdentifier).putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+                Toast.makeText(socialMediaActivity.this, exception.toString(), Toast.LENGTH_LONG).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                // ...
+                Toast.makeText(socialMediaActivity.this, "Uploading Process is successful", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
     }
 
 
