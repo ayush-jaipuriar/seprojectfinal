@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -21,6 +23,10 @@ public class ViewPostsActivity extends AppCompatActivity {
     private ArrayList<String> usernames;
     private ArrayAdapter adapter;
     private FirebaseAuth firebaseAuth;
+    private ImageView sentPostImageView;
+    private TextView txtDescription;
+    private ArrayList<DataSnapshot> dataSnapshots;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +36,8 @@ public class ViewPostsActivity extends AppCompatActivity {
         usernames = new ArrayList<>();
         adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1,usernames);
         postsListView.setAdapter(adapter);
+        sentPostImageView = findViewById(R.id.sentPostsImageView);
+        txtDescription = findViewById(R.id.txtDesciption);
 
         FirebaseDatabase.getInstance().getReference().child("my_users").child(firebaseAuth.getCurrentUser().getUid()).child("received_posts").addChildEventListener(new ChildEventListener() {
             @Override
