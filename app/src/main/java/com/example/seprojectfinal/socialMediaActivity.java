@@ -20,6 +20,7 @@ import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,7 +42,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class socialMediaActivity extends AppCompatActivity {
+public class socialMediaActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     private FirebaseAuth mAuth;
     private ImageView postImageView;
     private Button btnCreatePost;
@@ -51,6 +52,8 @@ public class socialMediaActivity extends AppCompatActivity {
     private EditText edtDescription;
     private ArrayList<String> usernames;
     private ArrayAdapter adapter;
+    private ArrayList<String> uids;
+
 
 
     @Override
@@ -64,6 +67,7 @@ public class socialMediaActivity extends AppCompatActivity {
         usernames = new ArrayList<>();
         adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, usernames);
         usersListView.setAdapter(adapter);
+        uids = new ArrayList<>();
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -188,6 +192,7 @@ public class socialMediaActivity extends AppCompatActivity {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
+                        uids.add(dataSnapshot.getKey());
                         String username = (String) dataSnapshot.child("username").getValue();
                         usernames.add(username);
                         adapter.notifyDataSetChanged();
@@ -223,5 +228,8 @@ public class socialMediaActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+    }
 }
